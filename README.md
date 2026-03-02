@@ -172,6 +172,16 @@ runs/ship-faster/active/<run_id>/
 
 ---
 
+## 🎮 Pixel Office Kit
+
+<p align="center">
+  <img src="assets/stage-office-demo.gif" alt="Pixel Office Kit — AI agents working in a pixel-art office" width="720" />
+</p>
+
+<p align="center"><sub>Agents · autonomous behavior · day/night cycle · canvas rendering — <a href="https://www.voxyz.space/vault"><b>Pro: real-time interactions + moods + conversations + matrix effects + OpenClaw integration</b></a></sub></p>
+
+---
+
 ## 🛠️ Skills (34)
 
 Composable workflows that ship end-to-end. Copy to `~/.claude/skills/`.
@@ -244,6 +254,25 @@ Runnable example projects — demos + regression references.
 
 ---
 
+## 🎮 Components
+
+Standalone UI components — embed in your own projects.
+
+| | Component | Stack | Description |
+|:-:|:---------|:------|:------------|
+| 🏢 | [Pixel Office Kit](pixel-office-kit/) | Next.js + Canvas | AI agent pixel office — watch agents work, walk, and collaborate |
+
+<details>
+<summary>Preview: Pixel Office Kit</summary>
+<br>
+<p align="center">
+  <img src="pixel-office-kit/public/stage-office-demo.gif" alt="Pixel Office Kit demo" width="720" />
+</p>
+<p align="center"><sub>4 agents · auto behavior · day/night cycle — <a href="https://www.voxyz.space/vault"><b>Pro: 6 agents + moods + conversations + matrix effects + OpenClaw integration</b></a></sub></p>
+</details>
+
+---
+
 <details>
 <summary><strong>Repository Structure</strong></summary>
 
@@ -267,6 +296,7 @@ ship-faster/
 │   ├── stripe/
 │   ├── cloudflare/
 │   └── assets/                   # Diagrams and static assets
+├── pixel-office-kit/             # AI agent pixel office component
 ├── snippets/                     # Internal reference code
 │   └── product-starter/
 ├── LICENSE

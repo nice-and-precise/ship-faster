@@ -128,6 +128,16 @@ runs/ship-faster/active/<run_id>/
 
 ---
 
+## 🎮 Pixel Office Kit
+
+<p align="center">
+  <img src="assets/stage-office-demo.gif" alt="Pixel Office Kit — AI agent 像素办公室" width="720" />
+</p>
+
+<p align="center"><sub>自主 Agent · 日夜变化 · Canvas 渲染 — <a href="https://www.voxyz.space/vault"><b>Pro 版：实时交互 + 情绪系统 + 对话 + Matrix 特效 + OpenClaw 数据集成</b></a></sub></p>
+
+---
+
 ## 🛠️ 技能（34）
 
 可组合的工作流，复制到 `~/.claude/skills/`。
@@ -197,6 +207,25 @@ runs/ship-faster/active/<run_id>/
 | 🏠 | [Elevate Move-in Booking](templates/007-elevate-move-in-booking/) | Vite + React | 预约调度 |
 
 > 💡 仓库根目录 **不可运行**。请选择一个模板或对你自己的项目运行技能。
+
+---
+
+## 🎮 组件
+
+独立 UI 组件 — 可嵌入你自己的项目。
+
+| | 组件 | 技术栈 | 描述 |
+|:-:|:----|:-------|:-----|
+| 🏢 | [Pixel Office Kit](pixel-office-kit/) | Next.js + Canvas | AI agent 像素办公室 — 观看 agent 工作、走动和协作 |
+
+<details>
+<summary>预览：Pixel Office Kit</summary>
+<br>
+<p align="center">
+  <img src="pixel-office-kit/public/stage-office-demo.gif" alt="Pixel Office Kit 演示" width="720" />
+</p>
+<p align="center"><sub>4 个 agent · 自主行为 · 日夜变化 — <a href="https://www.voxyz.space/vault"><b>Pro 版：6 agent + 情绪系统 + 对话 + Matrix 特效 + OpenClaw 数据集成</b></a></sub></p>
+</details>
 
 ---
 
