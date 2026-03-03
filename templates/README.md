@@ -66,6 +66,8 @@ Templates are runnable, full projects you can start from. Each template is self-
 
 | `033-agent-system-context-debugger` | Agent System Context Debugger | [`033-agent-system-context-debugger/`](033-agent-system-context-debugger/) |
 
+| `034-superpowers-methodology-course` | Superpowers Methodology Course | [`034-superpowers-methodology-course/`](034-superpowers-methodology-course/) |
+
 ## Usage
 
 1. Enter a template directory (example: `templates/001-copyback-studio`).

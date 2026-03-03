@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-accent: #6d28d9;
+  --color-accent-light: #8b5cf6;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: #6d28d966;
+  color: white;
+}
