@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:telemetry": "tsx --test lib/event-mapping.test.ts lib/telemetry-reliability.test.ts lib/mainframe-dispatch.test.ts"
+    "test": "npm run test:telemetry",
+    "test:telemetry": "tsx --test lib/event-mapping.test.ts lib/telemetry-reliability.test.ts lib/mainframe-dispatch.test.ts lib/tile-metrics.test.ts"
   },
   "dependencies": {
     "nes-ui-react": "^0.3.0",

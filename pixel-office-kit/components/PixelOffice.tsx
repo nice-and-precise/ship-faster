@@ -10,8 +10,8 @@ import ChronoTracker from './ChronoTracker';
 import RPGDialogueBox, { type DialogueLine } from './RPGDialogueBox';
 import LiveTicker from './LiveTicker';
 import AgentBuilderModal from './AgentBuilderModal';
-import MarioKartTrack, { type PipelineRun } from './MarioKartTrack';
-import { projectMissionEvents, type MissionEvent } from '@/lib/event-mapping';
+import MarioKartTrack from './MarioKartTrack';
+import DeskHitboxes from './DeskHitboxes';
 import {
   buildMainframeDispatchRequest,
   getMainframeConfigBlockReason,
@@ -20,14 +20,9 @@ import {
   type MainframeDispatchState,
 } from '@/lib/mainframe-dispatch';
 import { deriveTelemetryMode, latestEventTimestampMs, type TelemetryMode } from '@/lib/telemetry-reliability';
-
-type JsonRecord = Record<string, unknown>;
-
-type MissionRun = {
-  id: string;
-  name: string;
-  status: string;
-};
+import { type DeskPosition } from '@/lib/tile-metrics';
+import { useMissionTelemetry, telemetryAsArray } from '@/hooks/useMissionTelemetry';
+import { useTileMetrics } from '@/hooks/useTileMetrics';
 
 export type AgentProfile = {
   agent_id: string;
@@ -43,17 +38,6 @@ export type AgentProfile = {
   };
   created_at: string;
   updated_at: string;
-};
-
-type DeskPosition = {
-  x: number;
-  y: number;
-};
-
-type CanvasMetrics = {
-  left: number;
-  top: number;
-  scale: number;
 };
 
 type HoverTooltip = {
@@ -81,17 +65,6 @@ const EVENTS_STREAM_URL = `${API_BASE_URL}/api/v1/events/stream`;
 const AGENTS_URL = `${API_BASE_URL}/api/v1/agents`;
 const MAINFRAME_DISPATCH_TOKEN = process.env.NEXT_PUBLIC_MAINFRAME_DISPATCH_TOKEN;
 
-function asArray(value: unknown): unknown[] {
-  if (Array.isArray(value)) return value;
-  if (value && typeof value === 'object') {
-    const maybe = value as JsonRecord;
-    if (Array.isArray(maybe.runs)) return maybe.runs;
-    if (Array.isArray(maybe.data)) return maybe.data;
-    if (Array.isArray(maybe.items)) return maybe.items;
-  }
-  return [];
-}
-
 function getDeskPositions(): DeskPosition[] {
   const desks: DeskPosition[] = [];
 
@@ -118,16 +91,7 @@ function toSpriteStatus(status: string): AgentStatus {
 
 export function PixelOffice() {
   const mapFrameRef = useRef<HTMLDivElement>(null);
-  const [runs, setRuns] = useState<MissionRun[]>([]);
-  const [activeTrackRuns, setActiveTrackRuns] = useState<PipelineRun[]>([]);
-  const [idleTrackRuns, setIdleTrackRuns] = useState<PipelineRun[]>([]);
   const [agents, setAgents] = useState<AgentProfile[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [sseConnected, setSseConnected] = useState(false);
-  const [fallbackPollingActive, setFallbackPollingActive] = useState(false);
-  const [lastSuccessfulDataAtMs, setLastSuccessfulDataAtMs] = useState<number | null>(null);
-  const [lastSuccessfulPollAtMs, setLastSuccessfulPollAtMs] = useState<number | null>(null);
-  const [latestEventAtMs, setLatestEventAtMs] = useState<number | null>(null);
   const [telemetryNowMs, setTelemetryNowMs] = useState(() => Date.now());
   const [profileCardOpen, setProfileCardOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<AgentProfile | null>(null);
@@ -139,102 +103,24 @@ export function PixelOffice() {
   const [mainframeDispatchState, setMainframeDispatchState] = useState<MainframeDispatchState>('READY');
   const [mainframeDispatchDetail, setMainframeDispatchDetail] = useState<string | null>(null);
   const [uptime, setUptime] = useState(400);
-  const [metrics, setMetrics] = useState<CanvasMetrics>({ left: 0, top: 0, scale: 3 });
 
-  useEffect(() => {
-    let active = true;
-    let source: EventSource | null = null;
-    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-    let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
-    let sseLive = false;
-
-    const applyProjection = (events: MissionEvent[]) => {
-      const projection = projectMissionEvents(events);
-      if (!active) return;
-      setRuns(projection.runs);
-      setActiveTrackRuns(projection.activeRuns);
-      setIdleTrackRuns(projection.idleRuns);
-    };
-
-    const syncFreshness = (events: MissionEvent[]) => {
-      const latest = latestEventTimestampMs(events);
-      setLatestEventAtMs(latest);
-    };
-
-    const bootstrap = async (origin: 'bootstrap' | 'stream' | 'poll') => {
-      try {
-        const response = await fetch(EVENTS_URL, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Events failed (${response.status})`);
-        const json = await response.json();
-        const events = asArray(json) as MissionEvent[];
-        applyProjection(events);
-        syncFreshness(events);
-        const now = Date.now();
-        setLastSuccessfulDataAtMs(now);
-        if (origin === 'poll') setLastSuccessfulPollAtMs(now);
-        setError(null);
-      } catch {
-        if (active) {
-          setError('Mission Control events offline');
-        }
-      }
-    };
-
-    const stopFallbackPolling = () => {
-      if (fallbackTimer) {
-        clearTimeout(fallbackTimer);
-        fallbackTimer = null;
-      }
-      setFallbackPollingActive(false);
-    };
-
-    const runFallbackPoll = async () => {
-      if (!active || sseLive) return;
-      setFallbackPollingActive(true);
-      await bootstrap('poll');
-      if (active && !sseLive) {
-        fallbackTimer = setTimeout(runFallbackPoll, POLL_MS);
-      }
-    };
-
-    const connectStream = () => {
-      source?.close();
-      source = new EventSource(EVENTS_STREAM_URL);
-
-      source.onopen = () => {
-        if (!active) return;
-        sseLive = true;
-        setSseConnected(true);
-        stopFallbackPolling();
-      };
-
-      source.onmessage = async () => {
-        await bootstrap('stream');
-      };
-
-      source.onerror = () => {
-        source?.close();
-        if (active) {
-          sseLive = false;
-          setSseConnected(false);
-          setFallbackPollingActive(true);
-          void runFallbackPoll();
-          reconnectTimer = setTimeout(connectStream, POLL_MS);
-        }
-      };
-    };
-
-    void bootstrap('bootstrap');
-    connectStream();
-
-    return () => {
-      active = false;
-      source?.close();
-      setSseConnected(false);
-      if (reconnectTimer) clearTimeout(reconnectTimer);
-      if (fallbackTimer) clearTimeout(fallbackTimer);
-    };
-  }, []);
+  const {
+    runs,
+    activeTrackRuns,
+    idleTrackRuns,
+    error,
+    sseConnected,
+    fallbackPollingActive,
+    lastSuccessfulDataAtMs,
+    lastSuccessfulPollAtMs,
+    latestEventAtMs,
+  } = useMissionTelemetry({
+    eventsUrl: EVENTS_URL,
+    streamUrl: EVENTS_STREAM_URL,
+    pollMs: POLL_MS,
+    asArray: telemetryAsArray,
+    latestEventTimestampMs,
+  });
 
   useEffect(() => {
     let active = true;
@@ -249,7 +135,7 @@ export function PixelOffice() {
         if (!response.ok) throw new Error(`Agents failed (${response.status})`);
         const json = await response.json();
         if (active) {
-          setAgents(asArray(json) as AgentProfile[]);
+          setAgents(telemetryAsArray(json) as AgentProfile[]);
         }
       } catch (err) {
         if (!(err instanceof DOMException && err.name === 'AbortError')) {
@@ -278,31 +164,11 @@ export function PixelOffice() {
     return () => window.clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    const update = () => {
-      const frame = mapFrameRef.current;
-      if (!frame) return;
-      const canvas = frame.querySelector('canvas');
-      if (!canvas) return;
-
-      const frameRect = frame.getBoundingClientRect();
-      const canvasRect = canvas.getBoundingClientRect();
-      const style = window.getComputedStyle(canvas);
-      const borderLeft = parseFloat(style.borderLeftWidth) || 0;
-      const borderTop = parseFloat(style.borderTopWidth) || 0;
-      const scale = canvas.clientWidth / MAP_PIXEL_WIDTH || 1;
-
-      setMetrics({
-        left: canvasRect.left - frameRect.left + borderLeft,
-        top: canvasRect.top - frameRect.top + borderTop,
-        scale,
-      });
-    };
-
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, [runs.length, agents.length]);
+  const metrics = useTileMetrics({
+    mapFrameRef,
+    mapPixelWidth: MAP_PIXEL_WIDTH,
+    dependencies: [runs.length, agents.length],
+  });
 
   const deskPositions = useMemo(() => getDeskPositions(), []);
 
@@ -614,37 +480,14 @@ export function PixelOffice() {
                 zIndex: 90,
               }}
             >
-              {deskPositions.map((desk) => {
-                const key = `${desk.x},${desk.y}`;
-                const isOccupied = occupiedDeskKeys.has(key);
-                const size = Math.max(16, 16 * metrics.scale);
-                const tooltipText = isOccupied
-                  ? `${occupiedDeskKeys.get(key)!.name} [${occupiedDeskKeys.get(key)!.status || 'IDLE'}]`
-                  : 'Vacant desk';
-
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    aria-label={isOccupied ? `View agent at ${key}` : `Vacant desk at ${key}`}
-                    className="nes-btn"
-                    onMouseEnter={(event) => showTooltip(tooltipText, event)}
-                    onMouseMove={(event) => showTooltip(tooltipText, event)}
-                    onMouseLeave={hideTooltip}
-                    onClick={() => handleDeskClick(desk)}
-                    style={{
-                      position: 'absolute',
-                      left: Math.round(metrics.left + desk.x * metrics.scale),
-                      top: Math.round(metrics.top + desk.y * metrics.scale),
-                      width: Math.round(size),
-                      height: Math.round(size),
-                      opacity: 0,
-                      cursor: isOccupied ? 'help' : 'default',
-                      pointerEvents: 'auto',
-                    }}
-                  />
-                );
-              })}
+              <DeskHitboxes
+                deskPositions={deskPositions}
+                occupiedDeskKeys={occupiedDeskKeys}
+                metrics={metrics}
+                onHoverText={showTooltip}
+                onHoverEnd={hideTooltip}
+                onDeskClick={handleDeskClick}
+              />
 
               <button
                 type="button"
