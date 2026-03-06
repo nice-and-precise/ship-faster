@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 
 export interface PipelineRun {
   id: string;
@@ -41,11 +41,25 @@ function KartSprite({ color = '#ff4d4d' }: { color?: string }) {
 
 export function MarioKartTrack({ activeRuns, idleRuns }: MarioKartTrackProps) {
   const [tick, setTick] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  // Fix 3: Pause Mario Kart when off-screen
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(trackRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (!isVisible) return;
     const interval = setInterval(() => setTick((prev) => prev + 0.03), 50);
     return () => clearInterval(interval);
-  }, []);
+  }, [isVisible]);
 
   const racingRuns = activeRuns?.length ? activeRuns : demoActiveRuns;
   const parkedRuns = idleRuns?.length ? idleRuns : demoIdleRuns;
@@ -70,6 +84,7 @@ export function MarioKartTrack({ activeRuns, idleRuns }: MarioKartTrackProps) {
 
   return (
     <section
+      ref={trackRef}
       style={{
         width: '100%',
         minHeight: 560,

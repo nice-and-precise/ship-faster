@@ -55,7 +55,7 @@ export const PixelOfficeHUD: React.FC<HUDProps> = ({
           backgroundColor: '#ffdb4d',
           border: '1px solid #000',
           boxShadow: '1px 1px 0 #000',
-          animation: 'blink 0.6s infinite'
+          animation: 'blink 2s infinite'
         }} />
         <div style={{ fontSize: '12px' }}>x{pad(tokenBudget, 2)}</div>
       </div>
@@ -133,7 +133,7 @@ export const CRTOverlay: React.FC = () => {
           opacity: 0;
           z-index: 2;
           pointer-events: none;
-          animation: flicker 0.15s infinite;
+          animation: flicker 2s infinite;
         }
 
         @keyframes flicker {
@@ -158,6 +158,10 @@ export const CRTOverlay: React.FC = () => {
           90% { opacity: 0.7003; }
           95% { opacity: 0.36108; }
           100% { opacity: 0.24387; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .crt-container::before { animation: none; opacity: 0.02; }
         }
       `}</style>
     </div>
