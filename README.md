@@ -25,6 +25,7 @@ Recent integration wave included:
 - Nintendo-authentic Pixel Office UI upgrades
 - Mission Brief overlay wired to real telemetry state (no fake status)
 - Verification-gated workflow artifacts in `mission-control/artifacts/`
+- Paperclip sidecar engine + Mission Control ingest lane for approval-first operations
 
 ---
 
