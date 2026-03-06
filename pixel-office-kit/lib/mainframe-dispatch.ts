@@ -66,3 +66,47 @@ export function toMainframeStatusLabel(state: MainframeDispatchState, detail?: s
   if (state === 'BLOCKED_CONFIG') return detail ? `MAINFRAME: BLOCKED_CONFIG — ${detail}` : 'MAINFRAME: BLOCKED_CONFIG';
   return detail ? `MAINFRAME: FAILED — ${detail}` : 'MAINFRAME: FAILED';
 }
+
+export type MainframeDispatchResult = 
+  | { success: true; runId?: string; data?: Record<string, unknown> }
+  | { success: false; error: string };
+
+export async function parseMainframeDispatchResponse(response: Response): Promise<MainframeDispatchResult> {
+  const status = response.status;
+  let bodyText = '';
+  try {
+    bodyText = await response.text();
+  } catch {
+    // Ignore read errors
+  }
+
+  if (status === 502 || status === 503) {
+    return { success: false, error: `Gateway Error (${status}): The dispatch server is currently unreachable. Please verify the backend is running.` };
+  }
+
+  if (!response.ok) {
+    let errorMsg = `Dispatch failed (${status})`;
+    if (bodyText) {
+      try {
+        const parsed = JSON.parse(bodyText);
+        const msg = parsed.error || parsed.message || parsed.detail;
+        if (typeof msg === 'string') {
+          errorMsg += `: ${msg}`;
+        } else {
+          errorMsg += `: ${bodyText.slice(0, 140)}`;
+        }
+      } catch {
+        errorMsg += `: ${bodyText.slice(0, 140)}`;
+      }
+    }
+    return { success: false, error: errorMsg };
+  }
+
+  try {
+    const data = bodyText ? JSON.parse(bodyText) : {};
+    const runId = typeof data.id === 'string' ? data.id : typeof data.runId === 'string' ? data.runId : undefined;
+    return { success: true, runId, data };
+  } catch {
+    return { success: false, error: `Invalid JSON response from server: ${bodyText.slice(0, 100)}` };
+  }
+}

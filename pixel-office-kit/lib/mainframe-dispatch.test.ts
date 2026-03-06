@@ -37,3 +37,33 @@ test('buildMainframeDispatchRequest uses existing runs endpoint with expected pa
     source: 'pixel-office-mainframe',
   });
 });
+
+import { parseMainframeDispatchResponse } from './mainframe-dispatch.ts';
+
+test('parseMainframeDispatchResponse handles success JSON', async () => {
+  const res = new Response(JSON.stringify({ id: 'run_123', status: 'ok' }), { status: 200 });
+  const result = await parseMainframeDispatchResponse(res);
+  assert.equal(result.success, true);
+  if (result.success) {
+    assert.equal(result.runId, 'run_123');
+    assert.equal(result.data.status, 'ok');
+  }
+});
+
+test('parseMainframeDispatchResponse handles 502 Gateway Error', async () => {
+  const res = new Response('<html>nginx 502 bad gateway</html>', { status: 502 });
+  const result = await parseMainframeDispatchResponse(res);
+  assert.equal(result.success, false);
+  if (!result.success) {
+    assert.match(result.error, /Gateway Error \(502\)/);
+  }
+});
+
+test('parseMainframeDispatchResponse handles JSON error payload', async () => {
+  const res = new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401 });
+  const result = await parseMainframeDispatchResponse(res);
+  assert.equal(result.success, false);
+  if (!result.success) {
+    assert.match(result.error, /Dispatch failed \(401\): Invalid token/);
+  }
+});

@@ -17,6 +17,7 @@ import {
   getMainframeConfigBlockReason,
   toMainframeStatusLabel,
   transitionMainframeDispatchState,
+  parseMainframeDispatchResponse,
   type MainframeDispatchState,
 } from '@/lib/mainframe-dispatch';
 import { deriveTelemetryMode, latestEventTimestampMs, type TelemetryMode } from '@/lib/telemetry-reliability';
@@ -410,9 +411,9 @@ export function PixelOffice() {
         body: JSON.stringify(request.payload),
       });
 
-      if (!response.ok) {
-        const body = await response.text().catch(() => '');
-        throw new Error(`Dispatch failed (${response.status})${body ? `: ${body.slice(0, 140)}` : ''}`);
+      const result = await parseMainframeDispatchResponse(response);
+      if (!result.success) {
+        throw new Error(result.error);
       }
 
       setMainframeDispatchState(transitionMainframeDispatchState(mainframeDispatchState, { type: 'SUCCESS' }));
