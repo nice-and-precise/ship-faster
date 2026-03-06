@@ -1,9 +1,5 @@
-import { DemoShell } from '@/components/DemoShell';
+import { PixelOffice } from '@/components/PixelOffice';
 
 export default function Home() {
-  return (
-    <main>
-      <DemoShell />
-    </main>
-  );
+  return <PixelOffice />;
 }
