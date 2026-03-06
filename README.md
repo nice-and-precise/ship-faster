@@ -62,7 +62,7 @@ npm run dev
 - `templates/` — runnable app templates
 - `pixel-office-kit/` — retro operations UI + telemetry shell
 - `mission-control/artifacts/` — checkpoint, handoff, and gate evidence
-- `docs/` — supporting documentation
+- `docs/` — supporting documentation (see [INDEX.md](docs/INDEX.md))
 
 ---
 
