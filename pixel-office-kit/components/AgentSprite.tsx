@@ -80,3 +80,6 @@ export function AgentSprite({ x, y, name, status, characterType }: AgentSpritePr
     </div>
   );
 }
+
+export default AgentSprite;
+

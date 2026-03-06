@@ -47,8 +47,10 @@ function groupTasksByRole(tasks: PaperclipTask[]): Record<PaperclipRole, Papercl
   return grouped;
 }
 
-async function approveTask(approvalId: string, token: string): Promise<boolean> {
+async function approveTask(task: PaperclipTask, token: string): Promise<boolean> {
   try {
+    const runId = `pc_run_${task.taskId}`;
+    const stageId = "paperclip.proposal";
     const response = await fetch('/api/v1/actions/approval.approve', {
       method: 'POST',
       headers: {
@@ -56,9 +58,9 @@ async function approveTask(approvalId: string, token: string): Promise<boolean> 
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
-        approval_id: approvalId,
-        run_id: '',
-        stage_id: '',
+        approval_id: task.id,
+        run_id: runId,
+        stage_id: stageId,
         reason: 'Approved via Paperclip UI',
         requested_by: 'paperclip-ui',
       }),
@@ -70,8 +72,10 @@ async function approveTask(approvalId: string, token: string): Promise<boolean> 
   }
 }
 
-async function rejectTask(approvalId: string, token: string): Promise<boolean> {
+async function rejectTask(task: PaperclipTask, token: string): Promise<boolean> {
   try {
+    const runId = `pc_run_${task.taskId}`;
+    const stageId = "paperclip.proposal";
     const response = await fetch('/api/v1/actions/approval.reject', {
       method: 'POST',
       headers: {
@@ -79,9 +83,9 @@ async function rejectTask(approvalId: string, token: string): Promise<boolean> {
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
-        approval_id: approvalId,
-        run_id: '',
-        stage_id: '',
+        approval_id: task.id,
+        run_id: runId,
+        stage_id: stageId,
         reason: 'Rejected via Paperclip UI',
         requested_by: 'paperclip-ui',
       }),
@@ -107,7 +111,7 @@ export default function PaperclipOrgChartPanel({ projection, token }: PaperclipO
   const handleApprove = async (task: PaperclipTask) => {
     if (!token || task.state !== 'PROPOSED') return;
     setIsProcessing((prev) => ({ ...prev, [task.id]: true }));
-    const success = await approveTask(task.id, token);
+    const success = await approveTask(task, token);
     if (success) {
       setTasks((prev) =>
         prev.map((t) => (t.id === task.id ? { ...t, state: 'APPROVED' } : t))
@@ -119,7 +123,7 @@ export default function PaperclipOrgChartPanel({ projection, token }: PaperclipO
   const handleReject = async (task: PaperclipTask) => {
     if (!token || task.state !== 'PROPOSED') return;
     setIsProcessing((prev) => ({ ...prev, [task.id]: true }));
-    const success = await rejectTask(task.id, token);
+    const success = await rejectTask(task, token);
     if (success) {
       setTasks((prev) => prev.filter((t) => t.id !== task.id));
     }
