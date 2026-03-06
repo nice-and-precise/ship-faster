@@ -1,0 +1,5 @@
+{
+  "name": "AI Agent Sandbox Infrastructure Service",
+  "description": "Managed secure sandbox environment for deploying and running AI agents with automatic isolation and cost controls.",
+  "requestFramePermissions": []
+}

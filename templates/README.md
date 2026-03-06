@@ -72,6 +72,8 @@ Templates are runnable, full projects you can start from. Each template is self-
 
 | `036-agent-performance-metrics-dashboard` | Agent Performance Metrics Dashboard | [`036-agent-performance-metrics-dashboard/`](036-agent-performance-metrics-dashboard/) |
 
+| `037-ai-agent-sandbox-infrastructure-service` | AI Agent Sandbox Infrastructure Service | [`037-ai-agent-sandbox-infrastructure-service/`](037-ai-agent-sandbox-infrastructure-service/) |
+
 ## Usage
 
 1. Enter a template directory (example: `templates/001-copyback-studio`).
