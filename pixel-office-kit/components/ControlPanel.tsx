@@ -1,22 +1,17 @@
 'use client';
 
+import { Badge, Button, Container, Text } from 'nes-ui-react';
+import type { NamedColor } from 'nes-ui-react';
 import type { AgentDef } from '@/lib/agents';
 import type { AgentCommand } from './OfficeRoom/OfficeRoom';
 import type { OfficeAgentState } from './OfficeRoom/engine/types';
 
-const ACTIONS: { label: string; action: OfficeAgentState; emoji: string }[] = [
-  { label: 'Work',      action: 'work',      emoji: '💻' },
-  { label: 'Coffee',    action: 'coffee',     emoji: '☕' },
-  { label: 'Lounge',    action: 'lounge',     emoji: '🛋️' },
-  { label: 'Celebrate', action: 'celebrate',  emoji: '🎉' },
+const ACTIONS: { label: string; action: OfficeAgentState; message: string; color: NamedColor }[] = [
+  { label: 'Work', action: 'work', message: 'Focused work...', color: 'primary' },
+  { label: 'Coffee', action: 'coffee', message: 'Coffee break!', color: 'warning' },
+  { label: 'Lounge', action: 'lounge', message: 'Quick break', color: 'disabled' },
+  { label: 'Celebrate', action: 'celebrate', message: 'Woohoo!', color: 'success' },
 ];
-
-const ACTION_MESSAGES: Record<string, string> = {
-  work: 'Focused work...',
-  coffee: 'Coffee break!',
-  lounge: 'Quick break',
-  celebrate: 'Woohoo!',
-};
 
 interface ControlPanelProps {
   agents: AgentDef[];
@@ -28,73 +23,46 @@ interface ControlPanelProps {
 
 export function ControlPanel({ agents, autoMode, onToggleAuto, onCommand, activeCmd }: ControlPanelProps) {
   return (
-    <div style={{
-      marginTop: 16,
-      padding: 16,
-      borderRadius: 12,
-      background: '#0f1117',
-      border: '1px solid #1e293b',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-        <span style={{ color: '#9ca3af', fontSize: 13, fontWeight: 600 }}>Mode:</span>
-        <button
-          type="button"
-          onClick={onToggleAuto}
-          style={{
-            padding: '4px 12px',
-            borderRadius: 8,
-            border: '1px solid #334155',
-            background: autoMode ? '#1e40af' : '#1e293b',
-            color: autoMode ? '#93c5fd' : '#9ca3af',
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.15s',
-          }}
-        >
-          {autoMode ? 'Auto (running)' : 'Manual'}
-        </button>
+    <Container title="Control Deck" roundedCorners>
+      <div className="pixel-office-mode-row">
+        <div className="pixel-office-mode-actions">
+          <Text size="small">Simulator</Text>
+          <Badge backgroundColor={autoMode ? 'success' : 'warning'} text={autoMode ? 'AUTO' : 'MANUAL'} />
+        </div>
+
+        <Button color={autoMode ? 'warning' : 'primary'} onClick={onToggleAuto}>
+          {autoMode ? 'Switch To Manual' : 'Switch To Auto'}
+        </Button>
       </div>
 
       {!autoMode && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="pixel-office-manual-grid">
           {agents.map((agent) => (
-            <div key={agent.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{
-                width: 8, height: 8, borderRadius: '50%',
-                background: agent.color, flexShrink: 0,
-              }} />
-              <span style={{ color: '#e5e7eb', fontSize: 12, fontWeight: 600, width: 90 }}>
-                {agent.name}
-              </span>
-              <div style={{ display: 'flex', gap: 4 }}>
+            <div key={agent.id} className="pixel-office-agent-card">
+              <div className="pixel-office-agent-meta">
+                <span className="pixel-office-agent-dot" style={{ backgroundColor: agent.color }} aria-hidden />
+                <Text size="small">{agent.name}</Text>
+              </div>
+
+              <div className="pixel-office-action-row">
                 {ACTIONS.map((act) => {
                   const isActive = activeCmd?.agentId === agent.id && activeCmd?.action === act.action;
                   return (
-                    <button
+                    <Button
                       key={act.action}
-                      type="button"
-                      onClick={() => onCommand({
-                        agentId: agent.id,
-                        action: act.action,
-                        message: ACTION_MESSAGES[act.action],
-                      })}
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: 6,
-                        border: isActive ? '1px solid #60a5fa' : '1px solid #334155',
-                        background: isActive ? '#1e3a5f' : '#1e293b',
-                        color: isActive ? '#93c5fd' : '#d1d5db',
-                        fontSize: 11,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                        transform: isActive ? 'scale(0.93)' : 'scale(1)',
-                        boxShadow: isActive ? '0 0 8px rgba(96,165,250,0.3)' : 'none',
-                      }}
+                      color={isActive ? 'success' : act.color}
+                      size="small"
+                      borderInverted={isActive}
+                      onClick={() =>
+                        onCommand({
+                          agentId: agent.id,
+                          action: act.action,
+                          message: act.message,
+                        })
+                      }
                     >
-                      {act.emoji} {act.label}
-                    </button>
+                      {act.label}
+                    </Button>
                   );
                 })}
               </div>
@@ -102,6 +70,6 @@ export function ControlPanel({ agents, autoMode, onToggleAuto, onCommand, active
           ))}
         </div>
       )}
-    </div>
+    </Container>
   );
 }

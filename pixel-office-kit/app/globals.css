@@ -1,12 +1,208 @@
-@import 'tailwindcss';
-
 :root {
-  --background: #080a10;
-  --foreground: #e5e7eb;
+  --pixel-grid-a: rgba(117, 255, 220, 0.08);
+  --pixel-grid-b: rgba(65, 102, 255, 0.16);
+  --pixel-bg-0: #050915;
+  --pixel-bg-1: #101a3c;
+  --pixel-bg-2: #1c2960;
+  --pixel-shell: rgba(6, 10, 22, 0.86);
+  --pixel-panel: rgba(0, 0, 0, 0.34);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100%;
+}
+
+body.pixel-office-app {
+  margin: 0;
+  background:
+    linear-gradient(90deg, transparent 0 15px, var(--pixel-grid-a) 15px 16px, transparent 16px 100%),
+    linear-gradient(0deg, transparent 0 15px, var(--pixel-grid-a) 15px 16px, transparent 16px 100%),
+    radial-gradient(circle at 18% 10%, var(--pixel-bg-2) 0%, var(--pixel-bg-1) 42%, var(--pixel-bg-0) 100%);
+  background-size: 16px 16px, 16px 16px, cover;
+}
+
+.pixel-office-main {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px 10px 28px;
+}
+
+.pixel-office-shell {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.pixel-office-intro {
+  padding: 12px 12px 8px;
+}
+
+.pixel-office-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pixel-office-stage {
+  position: relative;
+  padding: 10px;
+  background: linear-gradient(180deg, var(--pixel-shell), rgba(6, 10, 22, 0.7));
+  border: 2px solid var(--pixel-grid-b);
+}
+
+.pixel-office-room-shell {
+  overflow: hidden;
+}
+
+.pixel-office-side-grid {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+
+.pixel-office-feed-list {
+  display: grid;
+  gap: 10px;
+}
+
+.pixel-office-feed-row {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: var(--pixel-panel);
+}
+
+.pixel-office-mode-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pixel-office-mode-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pixel-office-manual-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.pixel-office-agent-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  background: var(--pixel-panel);
+}
+
+.pixel-office-agent-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pixel-office-agent-dot {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+}
+
+.pixel-office-action-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pixel-office-action-row button {
+  min-width: 94px;
+}
+
+@media (min-width: 980px) {
+  .pixel-office-side-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+.envelope-sprite {
+  position: absolute;
+  width: 14px;
+  height: 10px;
+  margin-left: -7px;
+  margin-top: -5px;
+  pointer-events: none;
+  z-index: 130;
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.22, 0.88, 0.25, 1);
+  filter: drop-shadow(1px 2px 0 rgba(0, 0, 0, 0.55));
+}
+
+.envelope-sprite__paper {
+  position: absolute;
+  inset: 0;
+  background: #f8efcf;
+  border: 2px solid #2f2f2f;
+  box-shadow: inset 0 0 0 1px #fff8e2;
+}
+
+.envelope-sprite__paper::before,
+.envelope-sprite__paper::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  height: 2px;
+  background: #d8c99a;
+}
+
+.envelope-sprite__paper::before {
+  top: 2px;
+}
+
+.envelope-sprite__paper::after {
+  bottom: 2px;
+}
+
+.envelope-sprite__stamp {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 4px;
+  height: 4px;
+  background: #ff6b7a;
+  border: 1px solid #2f2f2f;
+}
+
+@media (max-width: 768px) {
+  .pixel-office-main {
+    padding: 16px 8px 24px;
+  }
+
+  .pixel-office-intro {
+    padding: 10px 8px 6px;
+  }
+
+  .pixel-office-stage {
+    padding: 6px;
+  }
+
+  .pixel-office-agent-card {
+    align-items: flex-start;
+  }
 }
