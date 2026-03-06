@@ -12,6 +12,8 @@ import LiveTicker from './LiveTicker';
 import AgentBuilderModal from './AgentBuilderModal';
 import MarioKartTrack from './MarioKartTrack';
 import DeskHitboxes from './DeskHitboxes';
+import PaperclipOrgChartPanel from './PaperclipOrgChartPanel';
+import { projectPaperclipTasks } from '@/lib/paperclip-mapping';
 import {
   buildMainframeDispatchRequest,
   getMainframeConfigBlockReason,
@@ -107,6 +109,7 @@ export function PixelOffice() {
 
   const {
     runs,
+    events,
     activeTrackRuns,
     idleTrackRuns,
     error,
@@ -208,6 +211,7 @@ export function PixelOffice() {
 
   const runningCount = useMemo(() => runs.filter((run) => toSpriteStatus(run.status) === 'running').length, [runs]);
   const completedCount = useMemo(() => runs.filter((run) => toSpriteStatus(run.status) === 'completed').length, [runs]);
+  const paperclipProjection = useMemo(() => projectPaperclipTasks(events), [events]);
 
   const telemetryMode = useMemo<TelemetryMode>(
     () =>
@@ -588,6 +592,10 @@ export function PixelOffice() {
                 />
               ))}
             </div>
+          </div>
+
+          <div className="pixel-paperclip-grid">
+            <PaperclipOrgChartPanel projection={paperclipProjection} />
           </div>
 
           <div style={{ marginTop: 16 }}>

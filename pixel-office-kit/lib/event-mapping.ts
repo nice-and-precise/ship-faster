@@ -6,6 +6,9 @@ export type MissionEvent = {
   event_id?: string;
   event_type?: string;
   occurred_at?: string;
+  status?: string;
+  source?: string;
+  actor?: string;
   correlation?: {
     run_id?: string | null;
     stage_id?: string | null;

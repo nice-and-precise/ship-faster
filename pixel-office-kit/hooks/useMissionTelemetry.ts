@@ -22,6 +22,7 @@ export function useMissionTelemetry(options: UseMissionTelemetryOptions) {
   const { eventsUrl, streamUrl, pollMs, asArray, latestEventTimestampMs } = options;
 
   const [runs, setRuns] = useState<MissionRun[]>([]);
+  const [events, setEvents] = useState<MissionEvent[]>([]);
   const [activeTrackRuns, setActiveTrackRuns] = useState(() => [] as ReturnType<typeof projectMissionEvents>['activeRuns']);
   const [idleTrackRuns, setIdleTrackRuns] = useState(() => [] as ReturnType<typeof projectMissionEvents>['idleRuns']);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +42,7 @@ export function useMissionTelemetry(options: UseMissionTelemetryOptions) {
     const applyProjection = (events: MissionEvent[]) => {
       const projection = projectMissionEvents(events);
       if (!active) return;
+      setEvents(events.slice(-200));
       setRuns(projection.runs);
       setActiveTrackRuns(projection.activeRuns);
       setIdleTrackRuns(projection.idleRuns);
@@ -128,6 +130,7 @@ export function useMissionTelemetry(options: UseMissionTelemetryOptions) {
 
   return {
     runs,
+    events,
     activeTrackRuns,
     idleTrackRuns,
     error,

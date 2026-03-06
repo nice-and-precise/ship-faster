@@ -134,6 +134,174 @@ body.pixel-office-app {
   min-width: 94px;
 }
 
+.pixel-paperclip-grid {
+  margin-top: 16px;
+}
+
+.pixel-paperclip-panel {
+  background: linear-gradient(180deg, rgba(255, 248, 220, 0.95), rgba(255, 240, 187, 0.9));
+}
+
+.pixel-paperclip-role-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.pixel-paperclip-role-card {
+  border: 2px solid #181818;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 2px 2px 0 #181818;
+  padding: 8px;
+}
+
+.pixel-paperclip-role-heading {
+  margin: 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.pixel-paperclip-role-subtitle {
+  margin: 6px 0 4px;
+  font-size: 10px;
+  color: #2d2d2d;
+}
+
+.pixel-paperclip-role-count {
+  margin: 0;
+  font-size: 10px;
+  color: #4c4c4c;
+}
+
+.pixel-paperclip-role-empty {
+  margin: 8px 0 0;
+  font-size: 9px;
+  color: #5c5c5c;
+}
+
+.pixel-paperclip-role-lane {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.pixel-paperclip-role-task {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+
+.pixel-paperclip-role-task-title {
+  font-size: 9px;
+  color: #2d2d2d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pixel-paperclip-status-row {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pixel-paperclip-state-pill {
+  display: inline-block;
+  border: 2px solid #111;
+  padding: 4px 6px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  box-shadow: 2px 2px 0 #111;
+}
+
+.pixel-paperclip-state-pill.is-proposed {
+  background: #ffcc5c;
+  color: #1f1f1f;
+}
+
+.pixel-paperclip-state-pill.is-approved {
+  background: #4ccf77;
+  color: #111;
+}
+
+.pixel-paperclip-empty {
+  margin-top: 12px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #f3f3f3;
+}
+
+.pixel-paperclip-task-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.pixel-paperclip-task-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 6px;
+}
+
+.pixel-paperclip-task-state {
+  min-width: 84px;
+  text-align: center;
+  border: 2px solid #111;
+  padding: 4px 2px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+.pixel-paperclip-task-state.is-mini {
+  min-width: 56px;
+  font-size: 6px;
+  padding: 2px 2px;
+}
+
+.pixel-paperclip-task-state.is-proposed {
+  background: #ffcc5c;
+  color: #1f1f1f;
+}
+
+.pixel-paperclip-task-state.is-approved {
+  background: #4ccf77;
+  color: #111;
+}
+
+.pixel-paperclip-task-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pixel-paperclip-task-copy strong {
+  font-size: 10px;
+  color: #1e1e1e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pixel-paperclip-task-copy span {
+  font-size: 9px;
+  color: #4d4d4d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (min-width: 980px) {
   .pixel-office-side-grid {
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
@@ -204,5 +372,14 @@ body.pixel-office-app {
 
   .pixel-office-agent-card {
     align-items: flex-start;
+  }
+
+  .pixel-paperclip-task-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pixel-paperclip-task-state {
+    min-width: 100%;
   }
 }
