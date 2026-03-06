@@ -8,6 +8,7 @@ export interface PipelineRun {
   stage: string;
   speed?: number;
   color?: string;
+  kartType?: string;
 }
 
 interface MarioKartTrackProps {
@@ -16,26 +17,37 @@ interface MarioKartTrackProps {
 }
 
 const demoActiveRuns: PipelineRun[] = [
-  { id: 'run-1', name: 'Crawler A', stage: 'Bypassing WAF', speed: 0.75, color: '#ff4d4d' },
-  { id: 'run-2', name: 'Crawler B', stage: 'Extracting HTML', speed: 0.58, color: '#47d16f' },
+  { id: 'run-1', name: 'Crawler A', stage: 'Bypassing WAF', speed: 0.75, color: '#ff4d4d', kartType: 'mario' },
+  { id: 'run-2', name: 'Crawler B', stage: 'Extracting HTML', speed: 0.58, color: '#47d16f', kartType: 'luigi' },
 ];
 
 const demoIdleRuns: PipelineRun[] = [
-  { id: 'run-3', name: 'Crawler C', stage: 'Idle / Cooldown', color: '#f8d24b' },
+  { id: 'run-3', name: 'Crawler C', stage: 'Idle / Cooldown', color: '#f8d24b', kartType: 'toad' },
 ];
 
-function KartSprite({ color = '#ff4d4d' }: { color?: string }) {
+// Mapping of character types to their kart sprites
+const KART_SPRITES: Record<string, string> = {
+  mario: '/sprites/karts/mario-kart.svg',
+  luigi: '/sprites/karts/luigi-kart.svg',
+  toad: '/sprites/karts/toad-kart.svg',
+  peach: '/sprites/karts/peach-kart.svg',
+  default: '/sprites/karts/mario-kart.svg',
+};
+
+function KartSprite({ color = '#ff4d4d', kartType = 'mario' }: { color?: string; kartType?: string }) {
+  const spritePath = KART_SPRITES[kartType] || KART_SPRITES.default;
+  
   return (
-    <svg viewBox="0 0 54 28" width={54} height={28} role="img" aria-label="pipeline kart">
-      <rect x="2" y="10" width="50" height="9" rx="3" fill="#222" />
-      <rect x="9" y="4" width="24" height="9" rx="2" fill={color} />
-      <rect x="22" y="4" width="11" height="9" rx="2" fill="#ffffff" opacity="0.2" />
-      <rect x="34" y="6" width="14" height="7" rx="2" fill="#b9c1c9" />
-      <circle cx="13" cy="22" r="5" fill="#111" />
-      <circle cx="13" cy="22" r="2" fill="#777" />
-      <circle cx="40" cy="22" r="5" fill="#111" />
-      <circle cx="40" cy="22" r="2" fill="#777" />
-    </svg>
+    <img 
+      src={spritePath}
+      alt={`${kartType} kart`}
+      width={54}
+      height={28}
+      style={{
+        imageRendering: 'pixelated',
+        filter: color ? `drop-shadow(0 0 2px ${color})` : 'none',
+      }}
+    />
   );
 }
 
@@ -155,7 +167,7 @@ export function MarioKartTrack({ activeRuns, idleRuns }: MarioKartTrackProps) {
                   background: '#a6adb7',
                 }}
               >
-                <KartSprite color={run.color} />
+                <KartSprite color={run.color} kartType={run.kartType} />
                 <div style={{ fontSize: 10, color: '#111', marginTop: 3 }}>{run.name}</div>
                 <div style={{ fontSize: 9, color: '#333' }}>{run.stage}</div>
               </div>
@@ -192,7 +204,7 @@ export function MarioKartTrack({ activeRuns, idleRuns }: MarioKartTrackProps) {
             >
               {run.stage}
             </div>
-            <KartSprite color={run.color} />
+            <KartSprite color={run.color} kartType={run.kartType} />
           </div>
         ))}
       </div>

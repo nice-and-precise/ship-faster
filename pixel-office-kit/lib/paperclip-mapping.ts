@@ -49,8 +49,6 @@ function getPayloadValue(event: MissionEvent, keys: string[]): string | null {
 }
 
 function isPaperclipApprovalEvent(event: MissionEvent): boolean {
-  if ((event.event_type ?? '').toLowerCase() !== 'approval.lifecycle') return false;
-
   const source = toLower(event.source);
   const actor = toLower(event.actor);
   const payload = asRecord(event.payload);
@@ -59,14 +57,20 @@ function isPaperclipApprovalEvent(event: MissionEvent): boolean {
   const stageId = toLower(getPayloadValue(event, ['stage_id']) ?? getCorrelationValue(event, ['stage_id']));
   const runId = toLower(getPayloadValue(event, ['run_id']) ?? getCorrelationValue(event, ['run_id']));
 
-  return (
-    source.includes('paperclip') ||
-    actor.includes('paperclip') ||
-    paperclipEventType.startsWith('task.') ||
-    proposalStatus === 'proposed' ||
-    stageId === 'paperclip.proposal' ||
-    runId.startsWith('pc_run_')
-  );
+  // Existing checks
+  if (source.includes('paperclip')) return true;
+  if (actor.includes('paperclip')) return true;
+  if (paperclipEventType.startsWith('task.')) return true;
+  if (proposalStatus === 'proposed') return true;
+  if (stageId === 'paperclip.proposal') return true;
+  if (runId.startsWith('pc_run_')) return true;
+
+  // NEW: Check for approval action events on paperclip tasks
+  const actionType = readString(payload, ['action_type']);
+  const paperclipMetadata = payload.paperclip_metadata;
+  if (actionType === 'approval.approve' && paperclipMetadata) return true;
+
+  return false;
 }
 
 function toTaskState(event: MissionEvent): PaperclipTaskState | null {
@@ -74,6 +78,13 @@ function toTaskState(event: MissionEvent): PaperclipTaskState | null {
   const payloadStatus = toLower(readString(payload, ['status', 'proposal_status']));
   const decision = toLower(readString(payload, ['decision']));
   const eventStatus = toLower(event.status);
+  const actionType = readString(payload, ['action_type']);
+  const paperclipEventType = toLower(readString(payload, ['paperclip_event_type']));
+
+  // Handle approval action events
+  if (actionType === 'approval.approve' || paperclipEventType === 'task.approved') {
+    return 'APPROVED';
+  }
 
   if (payloadStatus === 'approved' || decision === 'approved') return 'APPROVED';
 

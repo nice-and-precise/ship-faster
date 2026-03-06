@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24" width="96" height="48">
+  <!-- Mario Kart - Red -->
+  <g shape-rendering="crispEdges">
+    <!-- Shadow -->
+    <ellipse cx="24" cy="21" rx="20" ry="3" fill="#000000" opacity="0.3"/>
+    <!-- Back wheel left -->
+    <rect x="4" y="14" width="8" height="6" rx="1" fill="#111"/>
+    <rect x="6" y="16" width="4" height="3" fill="#444"/>
+    <!-- Back wheel right -->
+    <rect x="36" y="14" width="8" height="6" rx="1" fill="#111"/>
+    <rect x="38" y="16" width="4" height="3" fill="#444"/>
+    <!-- Kart body -->
+    <rect x="8" y="8" width="32" height="8" rx="2" fill="#cc0000"/>
+    <rect x="10" y="10" width="28" height="4" fill="#ff0000"/>
+    <!-- Front bumper -->
+    <rect x="2" y="10" width="6" height="5" rx="1" fill="#aa0000"/>
+    <!-- Seat -->
+    <rect x="14" y="4" width="12" height="6" rx="1" fill="#aa0000"/>
+    <!-- Mario head -->
+    <rect x="16" y="1" width="8" height="4" fill="#ff0000"/>
+    <rect x="17" y="2" width="6" height="3" fill="#ffcc99"/>
+    <rect x="18" y="3" width="1" height="1" fill="#000"/>
+    <rect x="21" y="3" width="1" height="1" fill="#000"/>
+    <!-- Steering wheel -->
+    <rect x="26" y="5" width="6" height="2" fill="#444"/>
+    <!-- Engine/exhaust -->
+    <rect x="38" y="9" width="4" height="4" fill="#666"/>
+    <!-- Front wheel left (smaller, visible) -->
+    <rect x="6" y="15" width="6" height="5" rx="1" fill="#111"/>
+    <!-- Front wheel right -->
+    <rect x="36" y="15" width="6" height="5" rx="1" fill="#111"/>
+  </g>
+</svg>
